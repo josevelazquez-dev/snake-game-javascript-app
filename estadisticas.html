@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estadísticas — Serpiente</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --accent: #3ecf8e;
+      --accent-dim: #2a9d6a;
+      --food: #e85d75;
+      --text: #e8eaed;
+      --muted: #8b9cb3;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(ellipse at top, #1a2838 0%, var(--bg) 55%);
+      color: var(--text);
+      padding: 1.25rem 1rem 2.5rem;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--muted);
+    }
+
+    header a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    header a:hover {
+      text-decoration: underline;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .header-links a[aria-current="page"] {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+      cursor: default;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+
+    .card .label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .card .value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+
+    .card.danger .value {
+      color: var(--food);
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    section h2 {
+      margin: 0 0 0.85rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: rgba(62, 207, 142, 0.06);
+    }
+
+    .score-cell {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 2rem 1rem;
+      margin: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--accent);
+      color: #0a0f12;
+      transition: filter 0.12s ease, transform 0.12s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.08);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    button.danger {
+      background: transparent;
+      color: var(--food);
+      border: 1px solid rgba(232, 93, 117, 0.45);
+    }
+
+    button.danger:hover {
+      background: rgba(232, 93, 117, 0.12);
+    }
+
+    .footnote {
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Estadísticas de partidas</h1>
+      <nav class="header-links" aria-label="Principal">
+        <a href="snake.html">Juego</a>
+        <a href="ranking.html">Ranking</a>
+        <a href="estadisticas.html" aria-current="page">Estadísticas</a>
+      </nav>
+    </header>
+
+    <div class="cards" id="cards"></div>
+
+    <section>
+      <h2>Historial (más reciente primero)</h2>
+      <div id="tableHost"></div>
+      <div class="actions">
+        <button type="button" class="danger" id="clearBtn">Borrar todo el historial</button>
+        <button type="button" class="secondary" id="refreshBtn">Actualizar</button>
+      </div>
+    </section>
+
+    <p class="footnote">
+      Los datos se guardan solo en este navegador (localStorage). Si borras datos del sitio o usas otro dispositivo, no se verán las mismas partidas.
+    </p>
+  </div>
+
+  <script>
+    (function () {
+      const MATCHES_KEY = "snake-matches";
+
+      const cardsEl = document.getElementById("cards");
+      const tableHost = document.getElementById("tableHost");
+      const clearBtn = document.getElementById("clearBtn");
+      const refreshBtn = document.getElementById("refreshBtn");
+
+      function loadMatches() {
+        try {
+          const raw = localStorage.getItem(MATCHES_KEY);
+          const p = raw ? JSON.parse(raw) : [];
+          return Array.isArray(p) ? p : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function formatDuration(ms) {
+        const s = Math.floor(ms / 1000);
+        const m = Math.floor(s / 60);
+        const r = s % 60;
+        if (m <= 0) return `${r}s`;
+        return `${m}m ${String(r).padStart(2, "0")}s`;
+      }
+
+      function formatDate(ts) {
+        try {
+          return new Intl.DateTimeFormat("es", {
+            dateStyle: "short",
+            timeStyle: "medium",
+          }).format(new Date(ts));
+        } catch {
+          return new Date(ts).toLocaleString("es");
+        }
+      }
+
+      function render() {
+        const matches = loadMatches();
+        const n = matches.length;
+
+        if (n === 0) {
+          cardsEl.innerHTML = `
+            <div class="card" style="grid-column: 1 / -1;">
+              <div class="label">Sin datos</div>
+              <div class="value" style="font-size:1rem;font-weight:500;color:var(--muted);">Juega en snake.html para registrar partidas.</div>
+            </div>`;
+          tableHost.innerHTML =
+            '<p class="empty">Aún no hay partidas guardadas.</p>';
+          return;
+        }
+
+        const scores = matches.map((m) => Number(m.score) || 0);
+        const sum = scores.reduce((a, b) => a + b, 0);
+        const best = Math.max(...scores);
+        const avg = Math.round(sum / n);
+        const durations = matches.map((m) =>
+          Math.max(0, Number(m.durationMs) || 0)
+        );
+        const totalMs = durations.reduce((a, b) => a + b, 0);
+        const avgDur = Math.round(totalMs / n);
+        const foods = scores.map((s) => Math.floor(s / 10));
+        const totalFoods = foods.reduce((a, b) => a + b, 0);
+
+        cardsEl.innerHTML = `
+          <div class="card"><div class="label">Partidas</div><div class="value">${n}</div></div>
+          <div class="card"><div class="label">Mejor puntuación</div><div class="value">${best}</div></div>
+          <div class="card"><div class="label">Media de puntos</div><div class="value">${avg}</div></div>
+          <div class="card"><div class="label">Puntos totales</div><div class="value">${sum}</div></div>
+          <div class="card"><div class="label">Comidas totales</div><div class="value">${totalFoods}</div></div>
+          <div class="card"><div class="label">Tiempo jugado</div><div class="value" style="font-size:1.15rem;">${formatDuration(totalMs)}</div></div>
+          <div class="card"><div class="label">Duración media</div><div class="value" style="font-size:1.15rem;">${formatDuration(avgDur)}</div></div>
+        `;
+
+        const sorted = [...matches].sort((a, b) => (b.at || 0) - (a.at || 0));
+        const rows = sorted
+          .map((m) => {
+            const at = m.at || 0;
+            const sc = Number(m.score) || 0;
+            const len = Number(m.length) || 0;
+            const dur = Math.max(0, Number(m.durationMs) || 0);
+            return `<tr>
+              <td>${formatDate(at)}</td>
+              <td class="score-cell">${sc}</td>
+              <td>${len}</td>
+              <td>${formatDuration(dur)}</td>
+            </tr>`;
+          })
+          .join("");
+
+        tableHost.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha y hora</th>
+                  <th>Puntos</th>
+                  <th>Longitud</th>
+                  <th>Duración</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      }
+
+      clearBtn.addEventListener("click", () => {
+        if (
+          !confirm(
+            "¿Borrar todas las partidas guardadas? No se puede deshacer."
+          )
+        ) {
+          return;
+        }
+        localStorage.removeItem(MATCHES_KEY);
+        render();
+      });
+
+      refreshBtn.addEventListener("click", render);
+
+      render();
+    })();
+  </script>
+</body>
+</html>

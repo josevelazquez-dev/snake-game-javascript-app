@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ranking — Serpiente</title>
+  <style>
+    :root {
+      --bg-deep: #0e0f18;
+      --bg-panel: #16182a;
+      --bg-glass: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.08);
+      --cyan: #00e5ff;
+      --purple: #8b5cf6;
+      --pink: #ec4899;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --green: #34d399;
+      --sidebar-w: 76px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg-deep);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.22), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 50%, rgba(0, 229, 255, 0.08), transparent),
+        radial-gradient(ellipse 50% 30% at 0% 80%, rgba(236, 72, 153, 0.1), transparent);
+      color: var(--text);
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: rgba(22, 24, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.25rem 0;
+      gap: 0.35rem;
+    }
+
+    .sidebar a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-glass);
+    }
+
+    .sidebar a.active {
+      color: var(--cyan);
+      background: rgba(0, 229, 255, 0.12);
+      box-shadow: 0 0 24px rgba(0, 229, 255, 0.15);
+    }
+
+    .sidebar a.active::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 24px;
+      border-radius: 0 4px 4px 0;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    .sidebar svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 1.25rem 1.5rem 2rem;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .topbar h1 span {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 0.2rem;
+      letter-spacing: 0.02em;
+    }
+
+    .me-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem 0.5rem 0.5rem;
+      border-radius: 16px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .me-card .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      flex-shrink: 0;
+    }
+
+    .me-card .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    .me-card .meta strong {
+      display: block;
+      font-size: 0.92rem;
+    }
+
+    .me-card .meta small {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .me-card .score-pill {
+      margin-left: 0.5rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+    }
+
+    /* Panel */
+    .panel {
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(30, 32, 55, 0.9), rgba(18, 20, 36, 0.95));
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .panel-head .sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .rows {
+      padding: 0.5rem 0;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.12s ease;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .row:hover {
+      background: rgba(0, 229, 255, 0.04);
+    }
+
+    .rank {
+      width: 28px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .row:nth-child(1) .rank {
+      color: #fbbf24;
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+    }
+
+    .row:nth-child(2) .rank {
+      color: #cbd5e1;
+    }
+
+    .row:nth-child(3) .rank {
+      color: #f97316;
+    }
+
+    .avatar-lg {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #fff;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .row-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .row-body .name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .row-body .city {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .row-score {
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      font-size: 1.05rem;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      justify-content: flex-end;
+      max-width: 140px;
+    }
+
+    .pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.28rem 0.55rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .pill.top {
+      background: rgba(52, 211, 153, 0.2);
+      color: var(--green);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+    }
+
+    .err {
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .text-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 0.55rem;
+      margin-bottom: 1rem;
+      font-size: 0.88rem;
+    }
+
+    .text-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .text-nav a:hover {
+      color: var(--text);
+    }
+
+    .text-nav a[aria-current="page"] {
+      color: var(--cyan);
+      cursor: default;
+    }
+
+    .text-nav .sep {
+      color: var(--muted);
+      opacity: 0.55;
+      user-select: none;
+    }
+
+    @media (max-width: 640px) {
+      .sidebar {
+        width: 64px;
+      }
+
+      .badges {
+        display: none;
+      }
+
+      .me-card .score-pill {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Principal (iconos)">
+      <a href="snake.html" title="Juego">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7L8 5z" /></svg>
+      </a>
+      <a href="ranking.html" class="active" title="Ranking">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 17.8 5.7 21l2.3-7-6-4.6h7.6L12 2z" /></svg>
+      </a>
+      <a href="estadisticas.html" title="Estadísticas">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 19h4V9H4v10zm6 0h4V5h-4v14zm6 0h4v-8h-4v8z" /></svg>
+      </a>
+    </aside>
+
+    <div class="main">
+      <nav class="text-nav" aria-label="Principal (texto)">
+        <a href="snake.html">Juego</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="ranking.html" aria-current="page">Ranking</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="estadisticas.html">Estadísticas</a>
+      </nav>
+      <header class="topbar">
+        <h1>
+          Clasificación global
+          <span>Mejores puntuaciones (usuarios)</span>
+        </h1>
+        <div class="me-card">
+          <span class="dot" aria-hidden="true"></span>
+          <div class="avatar" id="meInitials">Tú</div>
+          <div class="meta">
+            <strong>Tu sesión</strong>
+            <small>Récord en este navegador</small>
+          </div>
+          <span class="score-pill" id="myBest">0 pts</span>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Ranking de jugadores</h2>
+          <span class="sub" id="playerCount">—</span>
+        </div>
+        <div class="rows" id="rows"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="ranking-embed">
+[{"id":"usr_001","nombre":"María García López","email":"maria.garcia@ejemplo.test","telefono":"+34 612 001 001","ciudad":"Madrid","rol":"cliente","puntos":7240},{"id":"usr_002","nombre":"Carlos Ruiz Fernández","email":"carlos.ruiz@ejemplo.test","telefono":"+34 623 002 002","ciudad":"Barcelona","rol":"cliente","puntos":5890},{"id":"usr_003","nombre":"Ana Martínez Sánchez","email":"ana.martinez@ejemplo.test","telefono":"+34 634 003 003","ciudad":"Valencia","rol":"cliente","puntos":6980},{"id":"usr_004","nombre":"David Jiménez Torres","email":"david.jimenez@ejemplo.test","telefono":"+34 645 004 004","ciudad":"Sevilla","rol":"barbero","puntos":8810},{"id":"usr_005","nombre":"Laura Hernández Díaz","email":"laura.hernandez@ejemplo.test","telefono":"+34 656 005 005","ciudad":"Bilbao","rol":"cliente","puntos":3120},{"id":"usr_006","nombre":"Javier Moreno Gil","email":"javier.moreno@ejemplo.test","telefono":"+34 667 006 006","ciudad":"Zaragoza","rol":"cliente","puntos":4510},{"id":"usr_007","nombre":"Elena Castro Vargas","email":"elena.castro@ejemplo.test","telefono":"+34 678 007 007","ciudad":"Málaga","rol":"admin","puntos":9240},{"id":"usr_008","nombre":"Pablo Ortega Ramos","email":"pablo.ortega@ejemplo.test","telefono":"+34 689 008 008","ciudad":"Murcia","rol":"cliente","puntos":2890},{"id":"usr_009","nombre":"Isabel Navarro Prieto","email":"isabel.navarro@ejemplo.test","telefono":"+34 690 009 009","ciudad":"Palma","rol":"barbero","puntos":7650},{"id":"usr_010","nombre":"Miguel Ángel Serrano Moya","email":"miguel.serrano@ejemplo.test","telefono":"+34 601 010 010","ciudad":"Las Palmas","rol":"cliente","puntos":3320},{"id":"usr_011","nombre":"Cristina Delgado Vega","email":"cristina.delgado@ejemplo.test","telefono":"+34 612 011 011","ciudad":"Alicante","rol":"cliente","puntos":6120},{"id":"usr_012","nombre":"Roberto Iglesias Campos","email":"roberto.iglesias@ejemplo.test","telefono":"+34 623 012 012","ciudad":"Córdoba","rol":"cliente","puntos":1540}]
+  </script>
+
+  <script>
+    (function () {
+      const rowsEl = document.getElementById("rows");
+      const playerCount = document.getElementById("playerCount");
+      const myBestEl = document.getElementById("myBest");
+      const meInitials = document.getElementById("meInitials");
+      const BEST_KEY = "snake-best";
+
+      const gradients = [
+        "linear-gradient(135deg, #8b5cf6, #6366f1)",
+        "linear-gradient(135deg, #ec4899, #f43f5e)",
+        "linear-gradient(135deg, #06b6d4, #3b82f6)",
+        "linear-gradient(135deg, #10b981, #14b8a6)",
+        "linear-gradient(135deg, #f59e0b, #ef4444)",
+      ];
+
+      function initials(name) {
+        const parts = String(name || "")
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean);
+        if (parts.length === 0) return "?";
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return (
+          parts[0][0] + parts[parts.length - 1][0]
+        ).toUpperCase();
+      }
+
+      function topPill(rank) {
+        if (rank === 1) return '<span class="pill top">Top 1</span>';
+        if (rank <= 3) return '<span class="pill top">Top 3</span>';
+        if (rank <= 10) return '<span class="pill top">Top 10</span>';
+        return "";
+      }
+
+      async function loadUsers() {
+        try {
+          const r = await fetch("usuarios.json", { cache: "no-store" });
+          if (r.ok) {
+            const data = await r.json();
+            if (Array.isArray(data) && data.length) return data;
+          }
+        } catch (_) {}
+        const el = document.getElementById("ranking-embed");
+        try {
+          return JSON.parse(el.textContent);
+        } catch {
+          return [];
+        }
+      }
+
+      function render(users) {
+        const sorted = [...users].sort(
+          (a, b) => (Number(b.puntos) || 0) - (Number(a.puntos) || 0)
+        );
+        playerCount.textContent = sorted.length + " jugadores";
+
+        if (!sorted.length) {
+          rowsEl.innerHTML =
+            '<p class="err">No hay datos de ranking. Comprueba usuarios.json</p>';
+          return;
+        }
+
+        rowsEl.innerHTML = sorted
+          .map((u, i) => {
+            const rank = i + 1;
+            const pts = Number(u.puntos) || 0;
+            const g = gradients[i % gradients.length];
+            const ini = initials(u.nombre);
+            const pills = topPill(rank);
+
+            return `<div class="row">
+              <span class="rank">${rank}</span>
+              <div class="avatar-lg" style="background:${g}" title="${ini}">${ini}</div>
+              <div class="row-body">
+                <div class="name">${escapeHtml(u.nombre)}</div>
+                <div class="city">${escapeHtml(u.ciudad || "")}</div>
+              </div>
+              <span class="row-score">${pts.toLocaleString("es-ES")}</span>
+              <div class="badges">${pills}</div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function escapeHtml(s) {
+        const d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      const best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10) || 0;
+      myBestEl.textContent = best.toLocaleString("es-ES") + " pts";
+      meInitials.textContent = best > 0 ? String(best).slice(0, 2) : "Tú";
+
+      loadUsers().then(render);
+    })();
+  </script>
+</body>
+</html>

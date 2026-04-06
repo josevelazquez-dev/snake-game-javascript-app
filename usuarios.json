@@ -1,0 +1,110 @@
+[
+  {
+    "id": "usr_001",
+    "nombre": "María García López",
+    "email": "maria.garcia@ejemplo.test",
+    "telefono": "+52 443 100 1001",
+    "ciudad": "Contepec",
+    "rol": "cliente",
+    "puntos": 7240
+  },
+  {
+    "id": "usr_002",
+    "nombre": "Carlos Ruiz Fernández",
+    "email": "carlos.ruiz@ejemplo.test",
+    "telefono": "+52 443 100 1002",
+    "ciudad": "Morelia",
+    "rol": "cliente",
+    "puntos": 5890
+  },
+  {
+    "id": "usr_003",
+    "nombre": "Ana Martínez Sánchez",
+    "email": "ana.martinez@ejemplo.test",
+    "telefono": "+52 452 100 1003",
+    "ciudad": "Uruapan",
+    "rol": "cliente",
+    "puntos": 6980
+  },
+  {
+    "id": "usr_004",
+    "nombre": "David Jiménez Torres",
+    "email": "david.jimenez@ejemplo.test",
+    "telefono": "+52 351 100 1004",
+    "ciudad": "Zamora",
+    "rol": "barbero",
+    "puntos": 8810
+  },
+  {
+    "id": "usr_005",
+    "nombre": "Laura Hernández Díaz",
+    "email": "laura.hernandez@ejemplo.test",
+    "telefono": "+52 453 100 1005",
+    "ciudad": "Apatzingán",
+    "rol": "cliente",
+    "puntos": 3120
+  },
+  {
+    "id": "usr_006",
+    "nombre": "Javier Moreno Gil",
+    "email": "javier.moreno@ejemplo.test",
+    "telefono": "+52 753 100 1006",
+    "ciudad": "Lázaro Cárdenas",
+    "rol": "cliente",
+    "puntos": 4510
+  },
+  {
+    "id": "usr_007",
+    "nombre": "Elena Castro Vargas",
+    "email": "elena.castro@ejemplo.test",
+    "telefono": "+52 715 100 1007",
+    "ciudad": "Zitácuaro",
+    "rol": "admin",
+    "puntos": 9240
+  },
+  {
+    "id": "usr_008",
+    "nombre": "Pablo Ortega Ramos",
+    "email": "pablo.ortega@ejemplo.test",
+    "telefono": "+52 352 100 1008",
+    "ciudad": "La Piedad",
+    "rol": "cliente",
+    "puntos": 2890
+  },
+  {
+    "id": "usr_009",
+    "nombre": "Isabel Navarro Prieto",
+    "email": "isabel.navarro@ejemplo.test",
+    "telefono": "+52 434 100 1009",
+    "ciudad": "Pátzcuaro",
+    "rol": "barbero",
+    "puntos": 7650
+  },
+  {
+    "id": "usr_010",
+    "nombre": "Miguel Ángel Serrano Moya",
+    "email": "miguel.serrano@ejemplo.test",
+    "telefono": "+52 447 100 1010",
+    "ciudad": "Maravatío",
+    "rol": "cliente",
+    "puntos": 3320
+  },
+  {
+    "id": "usr_011",
+    "nombre": "Cristina Delgado Vega",
+    "email": "cristina.delgado@ejemplo.test",
+    "telefono": "+52 459 100 1011",
+    "ciudad": "Tacámbaro",
+    "rol": "cliente",
+    "puntos": 6120
+  },
+  {
+    "id": "usr_012",
+    "nombre": "Roberto Iglesias Campos",
+    "email": "roberto.iglesias@ejemplo.test",
+    "telefono": "+52 353 100 1012",
+    "ciudad": "Sahuayo",
+    "rol": "cliente",
+    "puntos": 1540
+  }
+]
