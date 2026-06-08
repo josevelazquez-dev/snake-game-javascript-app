@@ -1,0 +1,27 @@
+{
+  "name": "Serpiente - Snake Game",
+  "short_name": "Serpiente",
+  "description": "Juego clásico de la serpiente. Controles táctiles y por teclado.",
+  "start_url": "snake.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1419",
+  "theme_color": "#1a2332",
+  "categories": ["games", "entertainment"],
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "prefer_related_applications": false
+}
